@@ -1,11 +1,17 @@
-target/
+# === CẤU HÌNH CHẶN RÁC CHO PHẦN JAVA (Giữ nguyên hôm trước) ===
+Java/target/
 *.class
 .nb-gradle/
-build/
-dist/
+Java/build/
+Java/dist/
 nbproject/private/
 .vscode/
 .project
 .classpath
 .settings/
 .metadata
+
+# === CẤU HÌNH CHẶN RÁC CHO PHẦN SQL SERVER (Thêm mới vào dưới) ===
+*.suo
+*.user
+*.log
