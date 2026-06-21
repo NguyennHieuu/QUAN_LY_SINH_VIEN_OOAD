@@ -9,7 +9,7 @@ public class DataBaseConnection {
         Connection conn = null;
         try {
             // Tên máy chủ và cơ sở dữ liệu đã chuẩn hóa của Nhóm 10
-            String serverName = "DESKTOP-HCOBDF6\\\\SQLEXPRESS"; // Hoặc tên máy riêng của mỗi người, VD: TRUNGHIEU
+            String serverName = "DESKTOP-HCOBDF6\\\\SQLEXPRESSs"; // Hoặc tên máy riêng của mỗi người, VD: TRUNGHIEU
             String databaseName = "QUAN_LY_SINH_VIEN";
             
             // PHƯƠNG ÁN A: Dành cho máy sử dụng tài khoản SQL Server Authentication (sa/mật khẩu)
