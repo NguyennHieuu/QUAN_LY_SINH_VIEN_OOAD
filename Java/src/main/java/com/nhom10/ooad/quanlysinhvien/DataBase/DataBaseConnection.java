@@ -1,4 +1,4 @@
-package com.nhom10.ooad.database;
+package com.nhom10.ooad.quanlysinhvien.DataBase;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,13 +9,13 @@ public class DataBaseConnection {
         Connection conn = null;
         try {
             // Tên máy chủ và cơ sở dữ liệu đã chuẩn hóa của Nhóm 10
-            String serverName = "localhost"; // Hoặc tên máy riêng của mỗi người, VD: TRUNGHIEU
+            String serverName = "DESKTOP-HCOBDF6\\\\SQLEXPRESSs"; // Hoặc tên máy riêng của mỗi người, VD: TRUNGHIEU
             String databaseName = "QUAN_LY_SINH_VIEN";
             
             // PHƯƠNG ÁN A: Dành cho máy sử dụng tài khoản SQL Server Authentication (sa/mật khẩu)
             String dbURL = "jdbc:sqlserver://" + serverName + ":1433;databaseName=" + databaseName + ";encrypt=true;trustServerCertificate=true;";
             String user = "sa"; 
-            String password = "YOUR_PASSWORD_HERE"; // Thay mật khẩu SQL máy bạn vào đây
+            String password = "12345"; // Thay mật khẩu SQL máy bạn vào đây
             conn = DriverManager.getConnection(dbURL, user, password);
             
             // PHƯƠNG ÁN B: Dành cho máy đăng nhập bằng Windows Authentication (Không cần user/pass)
