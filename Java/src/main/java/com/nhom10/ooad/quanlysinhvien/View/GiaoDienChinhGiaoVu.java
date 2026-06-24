@@ -14,7 +14,7 @@ public class GiaoDienChinhGiaoVu extends JFrame {
     private final GiaoDienMoLopHocPhan giaoDienMoLopHocPhan; 
     private final GiaoDienQuanLyTaiKhoan giaoDienQuanLyTaiKhoan;
     
-    // 🌟 KHAI BÁO THÊM: Nút Đổi mật khẩu toàn cục trong Class
+    // Nút Đổi mật khẩu toàn cục trong Class
     private final JButton btnDoiMatKhau = new JButton("🔑 Đổi mật khẩu"); 
     private final JButton btnDangXuat = new JButton("Đăng xuất");
     private String userLogined = ""; // Biến lưu trữ tên đăng nhập phiên hiện tại
@@ -33,7 +33,7 @@ public class GiaoDienChinhGiaoVu extends JFrame {
 
         // 2. Khởi tạo thanh chứa Tab điều hướng phẳng hiện đại
         JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.setFont(segoeBoldFont); // 🌟 ĐÃ SỬA: Đặt font chữ đậm 14 cho tiêu đề các Tab
+        tabbedPane.setFont(segoeBoldFont); 
 
         // Lấy tên đăng nhập của tài khoản Giáo vụ hiện tại từ Session toàn cục
         if (XacThucController.getTaiKhoanHienTai() != null) {
@@ -47,12 +47,37 @@ public class GiaoDienChinhGiaoVu extends JFrame {
         giaoDienMoLopHocPhan = new GiaoDienMoLopHocPhan(); 
         giaoDienQuanLyTaiKhoan = new GiaoDienQuanLyTaiKhoan();
 
+        // ====================================================================
+        // 🌟 THIẾT LẬP KÊNH ĐỒNG BỘ SĨ SỐ SỐ 1: BẮN CALLBACK KHI THÊM/SỬA/XÓA SV
+        // ====================================================================
+        giaoDienQuanLySinhVien.setOnSinhVienChangeListener(new GiaoDienQuanLySinhVien.OnSinhVienChangeListener() {
+            @Override
+            public void onDataChanged() {
+                System.out.println("-> [GiaoDienChinhGiaoVu]: Nhận tín hiệu thay đổi nhân sự từ Tab Sinh viên.");
+                // 🌟 ĐÃ SỬA: Gọi đúng thực thể đối tượng giaoDienQuanLyLopHoc và hàm public xuLyTimKiem()
+                giaoDienQuanLyLopHoc.xuLyTimKiem(); 
+            }
+        });
+
         // 4. Nhúng (Add) mượt mà các khối JPanel vào từng thẻ Tab tương ứng trên thanh điều hướng
         tabbedPane.addTab("Quản lý Sinh viên", giaoDienQuanLySinhVien);
         tabbedPane.addTab("Quản lý Giảng viên", giaoDienQuanLyGiangVien);
         tabbedPane.addTab("Quản lý Lớp học", giaoDienQuanLyLopHoc);
         tabbedPane.addTab("Nghiệp vụ Mở lớp & Tra cứu HP", giaoDienMoLopHocPhan); 
         tabbedPane.addTab("Quản lý Tài khoản", giaoDienQuanLyTaiKhoan);
+
+        // ====================================================================
+        // 🌟 THIẾT LẬP KÊNH ĐỒNG BỘ SĨ SỐ SỐ 2: REFRESH KHI CLICK CHUYỂN TAB
+        // ====================================================================
+        tabbedPane.addChangeListener(e -> {
+            int selectedIndex = tabbedPane.getSelectedIndex();
+            // Chỉ số index: Tab 0 (Sinh viên), Tab 1 (Giảng viên), Tab 2 (Lớp học)
+            if (selectedIndex == 2) {
+                System.out.println("-> [GiaoDienChinhGiaoVu]: Giáo vụ chuyển sang Tab Lớp học. Thực hiện quét lại SQL làm mới sĩ số.");
+                // 🌟 ĐÃ SỬA: Thay thế hàm search bằng lời gọi nạp dữ liệu động xuLyTimKiem()
+                giaoDienQuanLyLopHoc.xuLyTimKiem(); 
+            }
+        });
 
         // Đưa toàn bộ thanh Tab chứa 5 phân hệ vào vùng trung tâm (CENTER) của Khung lớn
         add(tabbedPane, BorderLayout.CENTER);
@@ -61,21 +86,21 @@ public class GiaoDienChinhGiaoVu extends JFrame {
         // TẠO THANH ĐÁY CHỨA NÚT HÀNH ĐỘNG HỆ THỐNG (SOUTH)
         // ====================================================================
         JPanel panelBottom = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
-        panelBottom.setBackground(Color.WHITE); // 🌟 ĐỀ NỀN TRẮNG: Đồng bộ chuẩn phom thiết kế Nhóm 10
+        panelBottom.setBackground(Color.WHITE); 
         
-        // 🌟 ĐỊNH DẠNG VẬT LÝ NÚT: Đổi mật khẩu (Đồng bộ 100% với form Sinh viên/Kế toán)
+        // ĐỊNH DẠNG VẬT LÝ NÚT: Đổi mật khẩu
         btnDoiMatKhau.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnDoiMatKhau.setPreferredSize(new Dimension(150, 32));
-        btnDoiMatKhau.setBackground(new Color(45, 125, 50)); // Màu xanh lá cây bảo mật
+        btnDoiMatKhau.setBackground(new Color(45, 125, 50)); 
         btnDoiMatKhau.setForeground(Color.WHITE);
         btnDoiMatKhau.setOpaque(true);               
         btnDoiMatKhau.setBorderPainted(false);       
         btnDoiMatKhau.setEnabled(true);              
 
-        // 🌟 ĐỊNH DẠNG VẬT LÝ NÚT: Đăng xuất (Đồng bộ 100% với form Sinh viên/Kế toán)
+        // ĐỊNH DẠNG VẬT LÝ NÚT: Đăng xuất
         btnDangXuat.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnDangXuat.setPreferredSize(new Dimension(120, 32));
-        btnDangXuat.setBackground(new Color(211, 47, 47)); // Đỏ cam
+        btnDangXuat.setBackground(new Color(211, 47, 47)); 
         btnDangXuat.setForeground(Color.WHITE); 
         btnDangXuat.setOpaque(true);               
         btnDangXuat.setBorderPainted(false);       
@@ -94,10 +119,9 @@ public class GiaoDienChinhGiaoVu extends JFrame {
     }
 
     /**
-     * 🌟 THÊM MỚI ĐỒNG BỘ: Xử lý đổi mật khẩu kết nối Database trực tiếp dựa trên phiên userLogined hiện hành.
+     * Xử lý đổi mật khẩu kết nối Database trực tiếp dựa trên phiên userLogined hiện hành.
      */
     private void xuLyDoiMatKhauGiaoVu() {
-        // Tạo các ô nhập mật khẩu bảo mật ẩn ký tự
         JPasswordField txtMatKhauCu = new JPasswordField();
         JPasswordField txtMatKhauMoi = new JPasswordField();
         JPasswordField txtXacNhanMoi = new JPasswordField();
@@ -108,7 +132,6 @@ public class GiaoDienChinhGiaoVu extends JFrame {
             "Xác nhận lại mật khẩu mới:", txtXacNhanMoi
         };
 
-        // Ép Font chữ thông báo đồng điệu Segoe UI 14
         UIManager.put("OptionPane.buttonFont", segoeFont);
         UIManager.put("OptionPane.messageFont", segoeFont);
         
@@ -121,19 +144,16 @@ public class GiaoDienChinhGiaoVu extends JFrame {
             String passMoi = new String(txtMatKhauMoi.getPassword()).trim();
             String confMoi = new String(txtXacNhanMoi.getPassword()).trim();
 
-            // Validate trường rỗng
             if (passCu.isEmpty() || passMoi.isEmpty() || confMoi.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Lỗi: Vui lòng nhập đầy đủ các trường thông tin mật khẩu!", "Cảnh báo bảo mật", JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
-            // Kiểm tra trùng khớp gõ lại
             if (!passMoi.equals(confMoi)) {
                 JOptionPane.showMessageDialog(this, "Lỗi: Mật khẩu mới và mật khẩu xác nhận không trùng khớp nhau!", "Xung đột dữ liệu", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // Ghi nhận trực tiếp dữ liệu xuống bảng TaiKhoan qua SQL Server vật lý
             String sql = "UPDATE TaiKhoan SET MatKhau = ? WHERE TenDangNhap = ? AND MatKhau = ?";
             try (Connection conn = com.nhom10.ooad.quanlysinhvien.DataBase.DataBaseConnection.getConnection();
                  PreparedStatement ps = conn.prepareStatement(sql)) {

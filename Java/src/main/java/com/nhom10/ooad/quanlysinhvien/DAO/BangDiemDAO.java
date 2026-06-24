@@ -36,9 +36,12 @@ public class BangDiemDAO {
                     dsv.setSoTinChi(rs.getInt("SoTC"));
                     dsv.setTrongSo(rs.getBigDecimal("TrongSoQT") + " - " + rs.getBigDecimal("TrongSoCK"));
                     
-                    dsv.setDiemQT((Double) rs.getObject("DiemQT"));
-                    dsv.setDiemCK((Double) rs.getObject("DiemCK"));
-                    dsv.setDiemTongKet((Double) rs.getObject("DiemTongKet"));
+                    // --- ĐÃ SỬA: Thay thế việc ép kiểu (Double) trực tiếp bằng phương thức an toàn ---
+                    dsv.setDiemQT(rs.getObject("DiemQT") != null ? rs.getDouble("DiemQT") : null);
+                    dsv.setDiemCK(rs.getObject("DiemCK") != null ? rs.getDouble("DiemCK") : null);
+                    dsv.setDiemTongKet(rs.getObject("DiemTongKet") != null ? rs.getDouble("DiemTongKet") : null);
+                    // -------------------------------------------------------------------------------
+                    
                     dsv.setTrangThai(rs.getString("TrangThai"));
                     
                     list.add(dsv);
@@ -65,7 +68,8 @@ public class BangDiemDAO {
             ps.setString(2, maHPTienQuyet);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    double diemTK = rs.getBigDecimal("DiemTongKet") != null ? rs.getDouble("DiemTongKet") : 0.0;
+                    // Sử dụng rs.getObject để kiểm tra NULL trước khi lấy giá trị
+                    double diemTK = rs.getObject("DiemTongKet") != null ? rs.getDouble("DiemTongKet") : 0.0;
                     return diemTK >= 4.0;
                 }
             }

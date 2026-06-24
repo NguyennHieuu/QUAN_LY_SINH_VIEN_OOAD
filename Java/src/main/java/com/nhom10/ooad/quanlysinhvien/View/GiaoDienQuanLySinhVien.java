@@ -19,6 +19,23 @@ public class GiaoDienQuanLySinhVien extends JPanel {
     private JButton btnThem, btnSua, btnXoa, btnTimKiem;
     private JLabel lblStatus;
 
+    // 🌟 THÊM MỚI: Interface phục vụ việc bắn tín hiệu cập nhật sĩ số lên GiaoDienChinhGiaoVu
+    public interface OnSinhVienChangeListener {
+        void onDataChanged();
+    }
+
+    private OnSinhVienChangeListener changeListener;
+
+    public void setOnSinhVienChangeListener(OnSinhVienChangeListener listener) {
+        this.changeListener = listener;
+    }
+
+    private void notifyDataChanged() {
+        if (changeListener != null) {
+            changeListener.onDataChanged();
+        }
+    }
+
     public GiaoDienQuanLySinhVien() {
         initComponent();
     }
@@ -120,9 +137,6 @@ public class GiaoDienQuanLySinhVien extends JPanel {
         });
     }
 
-    /**
-     * Nghiệp vụ 1: Tra cứu dốc dữ liệu từ SQL Server
-     */
     private void xuLyTimKiem() {
         String keyword = txtTimKiem.getText().trim();
         model.setRowCount(0); 
@@ -151,9 +165,6 @@ public class GiaoDienQuanLySinhVien extends JPanel {
         }
     }
 
-    /**
-     * Nghiệp vụ 2: Bấm nút "Thêm" -> Đẩy dữ liệu vào Database thật và hiển thị lên lưới phải
-     */
     private void xuLyThem() {
         String mssv = txtMSSV.getText().trim();
         String hoTen = txtHoTen.getText().trim();
@@ -174,11 +185,13 @@ public class GiaoDienQuanLySinhVien extends JPanel {
             sv.setGioiTinh(gioiTinh);
             sv.setMaLopQuanLy(maLop);
 
-            // Gọi Controller đẩy xuống SQL Server
             boolean success = controller.themSinhVien(sv);
             if (success) {
                 model.addRow(new Object[]{mssv, hoTen, strNgaySinh, gioiTinh, maLop});
                 setStatus("Đã thêm thành công sinh viên " + mssv + " vào cơ sở dữ liệu!", false);
+                
+                // 🌟 BẮN TÍN HIỆU: Thông báo cho GiaoDienChinhGiaoVu cập nhật lại Tab Lớp Học
+                notifyDataChanged();
                 clearForm();
             } else {
                 setStatus("Lỗi: Không thể lưu vào DB! Kiểm tra xem lớp '" + maLop + "' đã tồn tại chưa.", true);
@@ -188,9 +201,6 @@ public class GiaoDienQuanLySinhVien extends JPanel {
         }
     }
 
-    /**
-     * Nghiệp vụ 3: Bấm nút "Sửa" -> Cập nhật dữ liệu thật dưới Database
-     */
     private void xuLySua() {
         int selectedRow = tblSinhVien.getSelectedRow();
         if (selectedRow == -1) {
@@ -211,13 +221,12 @@ public class GiaoDienQuanLySinhVien extends JPanel {
 
         try {
             SinhVien sv = new SinhVien();
-            sv.setMssv(mssv); // MSSV giữ vai trò Khóa chính cố định
+            sv.setMssv(mssv); 
             sv.setHoTen(hoTen);
             sv.setNgaySinh(df.parse(strNgaySinh));
             sv.setGioiTinh(gioiTinh);
             sv.setMaLopQuanLy(maLop);
 
-            // Gọi Controller xử lý truy vấn UPDATE
             boolean success = controller.suaSinhVien(sv);
             if (success) {
                 model.setValueAt(hoTen, selectedRow, 1);
@@ -226,6 +235,9 @@ public class GiaoDienQuanLySinhVien extends JPanel {
                 model.setValueAt(maLop, selectedRow, 4);
 
                 setStatus("Đã cập nhật thay đổi hồ sơ sinh viên " + mssv + " xuống Database thành công.", false);
+                
+                // 🌟 BẮN TÍN HIỆU: Đổi lớp hoặc sửa thông tin làm đổi sĩ số -> Kích hoạt làm mới Tab lớp
+                notifyDataChanged();
                 clearForm();
             } else {
                 setStatus("Lỗi hệ thống: Cập nhật thông tin thất bại!", true);
@@ -235,9 +247,6 @@ public class GiaoDienQuanLySinhVien extends JPanel {
         }
     }
 
-    /**
-     * Nghiệp vụ 4: Xóa sinh viên (Đồng bộ chạy Transaction chuỗi)
-     */
     private void xuLyXoa() {
         int selectedRow = tblSinhVien.getSelectedRow();
         if (selectedRow == -1) {
@@ -257,6 +266,9 @@ public class GiaoDienQuanLySinhVien extends JPanel {
             if (success) {
                 setStatus("Đã xóa sinh viên và cập nhật giảm sĩ số lớp thành công!", false);
                 model.removeRow(selectedRow);
+                
+                // 🌟 BẮN TÍN HIỆU: Giảm sĩ số bên bảng lớp thực tế -> Kích hoạt làm mới Tab lớp
+                notifyDataChanged();
                 clearForm();
             } else {
                 setStatus("Lỗi hệ thống hoặc kết nối Database thất bại!", true);

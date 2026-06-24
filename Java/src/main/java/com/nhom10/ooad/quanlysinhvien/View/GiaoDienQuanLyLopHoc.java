@@ -124,7 +124,7 @@ public class GiaoDienQuanLyLopHoc extends JPanel {
     /**
      * Nghiệp vụ 1: Tìm kiếm / Tra cứu lớp học từ SQL Server
      */
-    private void xuLyTimKiem() {
+    public void xuLyTimKiem() {
         String keyword = txtTimKiem.getText().trim();
         model.setRowCount(0); 
 

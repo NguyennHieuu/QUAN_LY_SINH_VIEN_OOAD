@@ -201,15 +201,29 @@ public class GiaoDienMoLopHocPhan extends JPanel {
         xuLyTimKiemNhanh(); 
     }
 
+    /**
+     * 🌟 ĐÃ SỬA DỨT ĐIỂM: Khớp hoàn chỉnh với phương thức searchHocPhan() và các trường thực tế trong SQL.
+     */
     private void xuLyTimKiemNhanh() {
         modelTraCuu.setRowCount(0);
         String keyword = txtTimKiemNhanh.getText().trim();
         int index = cboLoaiTraCuu.getSelectedIndex();
 
         if (index == 0) { 
-            modelTraCuu.addRow(new Object[]{"IT3011", "Phân tích thiết kế hướng đối tượng", "3 TC", "Bắt buộc"});
-            modelTraCuu.addRow(new Object[]{"EE3110", "Cơ sở hệ thống nhúng", "3 TC", "Bắt buộc"});
-            hienThiThongBao("Đã tải danh sách học phần từ hệ thống cơ sở dữ liệu.", false);
+            // Gọi chính xác phương thức từ file HocPhanDAO.java của bạn
+            com.nhom10.ooad.quanlysinhvien.DAO.HocPhanDAO hpDAO = new com.nhom10.ooad.quanlysinhvien.DAO.HocPhanDAO();
+            List<HocPhan> listHp = hpDAO.searchHocPhan(keyword); 
+            
+            for (HocPhan hp : listHp) {
+                // Khớp chuẩn xác theo các phương thức Getter tương ứng cấu trúc bảng SQL của bạn
+                modelTraCuu.addRow(new Object[]{
+                    hp.getMaHP(), 
+                    hp.getTenHP(), 
+                    hp.getSoTC() + " TC", 
+                    hp.getLoaiHP()
+                });
+            }
+            hienThiThongBao("Đã đồng bộ thành công danh sách Học phần hiện hành từ Database.", false);
         } else { 
             com.nhom10.ooad.quanlysinhvien.DAO.GiangVienDAO gvDAO = new com.nhom10.ooad.quanlysinhvien.DAO.GiangVienDAO();
             List<GiangVien> listGv = gvDAO.search(keyword);
@@ -231,7 +245,7 @@ public class GiaoDienMoLopHocPhan extends JPanel {
                     lhp.getMaHP(),
                     lhp.getMaHocKy(),
                     lhp.getSiSoToiDa(),
-                    "Thứ 2 (08:00 - 11:30)", // Khi load từ SQL, gán lịch nháp lên giao diện
+                    "Thứ 2 (08:00 - 11:30)", 
                     "30/70", 
                     lhp.getMaGV()
                 });
@@ -242,9 +256,6 @@ public class GiaoDienMoLopHocPhan extends JPanel {
         }
     }
 
-    /**
-     * 🌟 ĐÃ SỬA: Nghiệp vụ Mở lớp tích hợp cơ chế so khớp lịch chéo trên lưới JTable
-     */
     private void xuLyMoLopHocPhan() {
         txtMaLopHP.setBackground(Color.WHITE);
         txtMaHP.setBackground(Color.WHITE);
@@ -280,7 +291,6 @@ public class GiaoDienMoLopHocPhan extends JPanel {
                 return;
             }
 
-            // 🌟 GIẢI PHÁP CHECK TRÙNG LỊCH ĐỘNG TRÊN UI (Không cần sửa Database)
             boolean biTrungLichTrenView = false;
             for (int r = 0; r < modelLopHPChinh.getRowCount(); r++) {
                 String maLopHPOnTable = modelLopHPChinh.getValueAt(r, 0).toString();
@@ -288,9 +298,7 @@ public class GiaoDienMoLopHocPhan extends JPanel {
                 String lichOnTable = modelLopHPChinh.getValueAt(r, 4).toString();
                 String gvOnTable = modelLopHPChinh.getValueAt(r, 6).toString();
 
-                // Nếu trùng Học kỳ, trùng Mã giảng viên và trùng khít cả Khung giờ gõ trên ô nhập liệu
                 if (maHK.equals(hkOnTable) && maGV.equalsIgnoreCase(gvOnTable) && lichHoc.equalsIgnoreCase(lichOnTable)) {
-                    // Loại trừ trường hợp Giáo vụ bấm chọn chính dòng đó để lưu đè (nếu có tính năng update)
                     if (!maLopHP.equalsIgnoreCase(maLopHPOnTable)) {
                         biTrungLichTrenView = true;
                         break;
@@ -305,7 +313,7 @@ public class GiaoDienMoLopHocPhan extends JPanel {
                 JOptionPane.showMessageDialog(this, 
                         "Xung đột lịch trình: Giảng viên đã được phân công đứng lớp học phần khác\nvào đúng khung giờ " + lichHoc + " trong học kỳ " + maHK + "!", 
                         "Cảnh báo xung đột lịch dạy", JOptionPane.ERROR_MESSAGE);
-                return; // Ngắt tiến trình chặn đứng, không cho lưu xuống CSDL
+                return;
             }
 
             double weightQT = (double) tsQT / 100.0;
